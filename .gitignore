@@ -1,0 +1,13 @@
+.env
+
+.tio.tokens.json
+
+venv/
+__pycache__/
+
+*.pyc
+
+.vscode/
+.idea/
+
+*.log
