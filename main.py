@@ -2,8 +2,7 @@ import asyncio
 import signal
 
 
-from tiktok_worker import TikTokWorker
-
+from tiktok_listener import client as tiktok_client
 
 from twitch_bot import (
     start_twitch,
@@ -43,6 +42,35 @@ def shutdown_handler():
 
 
 
+# =========================
+# TIKTOK RUNNER
+# =========================
+
+async def run_tiktok():
+
+    try:
+
+        await tiktok_client.connect()
+
+
+
+    except asyncio.CancelledError:
+
+        pass
+
+
+
+    except Exception as e:
+
+
+        print("==============================")
+        print("TIKTOK ERROR")
+        print(e)
+        print("==============================")
+
+
+
+
 
 # =========================
 # TWITCH RUNNER
@@ -58,9 +86,7 @@ async def run_twitch():
 
     except asyncio.CancelledError:
 
-        print("Twitch task cancelled")
-
-        raise
+        pass
 
 
 
@@ -96,9 +122,7 @@ async def main():
 
 
 
-    # =========================
-    # CTRL+C HANDLER
-    # =========================
+    # CTRL+C handler
 
     try:
 
@@ -119,35 +143,21 @@ async def main():
 
 
 
-    # =========================
-    # START TIKTOK WORKER
-    # =========================
+    # START SERVICES
 
-    tiktok_worker = TikTokWorker()
+    tiktok_task = asyncio.create_task(
 
-    tiktok_worker.start()
+        run_tiktok()
 
-
+    )
 
 
-
-    # =========================
-    # START TWITCH
-    # =========================
 
     twitch_task = asyncio.create_task(
 
         run_twitch()
 
     )
-
-
-
-    tasks = [
-
-        twitch_task
-
-    ]
 
 
 
@@ -183,9 +193,7 @@ async def main():
 
 
 
-        # =========================
         # CLOSE TWITCH
-        # =========================
 
         try:
 
@@ -193,9 +201,7 @@ async def main():
 
 
             print(
-
                 "Twitch closed"
-
             )
 
 
@@ -207,46 +213,15 @@ async def main():
 
 
 
-        # =========================
-        # CLOSE TIKTOK WORKER
-        # =========================
+        # STOP TASK
 
-        try:
-
-            tiktok_worker.stop()
-
-
-        except Exception as e:
-
-
-            print("==============================")
-            print("TIKTOK WORKER STOP ERROR")
-            print(e)
-            print("==============================")
-
-
-
-
-
-        # =========================
-        # STOP ASYNC TASKS
-        # =========================
-
-        print("Stopping tasks...")
-
-
-        for task in tasks:
-
-
-            if not task.done():
-
-                task.cancel()
+        twitch_task.cancel()
 
 
 
         await asyncio.gather(
 
-            *tasks,
+            twitch_task,
 
             return_exceptions=True
 
@@ -271,15 +246,6 @@ async def main():
 if __name__ == "__main__":
 
 
-    try:
-
-        asyncio.run(
-
-            main()
-
-        )
-
-
-    except KeyboardInterrupt:
-
-        pass
+    asyncio.run(
+        main()
+    )

@@ -87,14 +87,11 @@ def clean_username(name):
 
 
 
-
-
 # =========================
 # CONNECT
 # =========================
 
 @client.on(ConnectEvent)
-
 async def on_connect(event):
 
     print("==============================")
@@ -108,21 +105,16 @@ async def on_connect(event):
 
 
 
-
-
 # =========================
 # CHAT
 # =========================
 
 @client.on(CommentEvent)
-
 async def on_comment(event):
 
 
     username = clean_username(
-
         event.user.nickname
-
     )
 
 
@@ -159,14 +151,11 @@ async def on_comment(event):
 
 
 
-
-
 # =========================
 # FOLLOW
 # =========================
 
 @client.on(FollowEvent)
-
 async def on_follow(event):
 
 
@@ -189,8 +178,6 @@ async def on_follow(event):
         output
 
     )
-
-
 
 
 
@@ -228,14 +215,11 @@ async def send_gift_preview(
 
 
 
-
-
 # =========================
 # GIFT EVENT
 # =========================
 
 @client.on(GiftEvent)
-
 async def on_gift(event):
 
 
@@ -253,6 +237,23 @@ async def on_gift(event):
     # =========================
     # HANDLE GIFT STREAK
     # =========================
+    #
+    # TikTok gift menggunakan
+    # sistem streak/combo.
+    #
+    # Saat user melakukan combo:
+    #
+    # Rose x1
+    # Rose x5
+    # Rose x13
+    #
+    # TikTokLive dapat mengirim
+    # beberapa event.
+    #
+    # Kita hanya proses event
+    # terakhir saat streak selesai.
+    #
+
 
     if hasattr(
 
@@ -272,6 +273,11 @@ async def on_gift(event):
     # =========================
     # FINAL COUNT
     # =========================
+    #
+    # repeat_count pada event
+    # terakhir berisi jumlah
+    # gift final.
+    #
 
     count = getattr(
 
@@ -299,14 +305,11 @@ async def on_gift(event):
 
 
 
-
-
 # =========================
 # DISCONNECT
 # =========================
 
 @client.on(DisconnectEvent)
-
 async def on_disconnect(event):
 
     print("==============================")
@@ -315,29 +318,65 @@ async def on_disconnect(event):
 
 
 
-
-
 # =========================
-# STOP
+# MAIN
 # =========================
 
-async def stop_tiktok():
+def main():
+
+    print("==============================")
+    print("TIKTOK PREVIEW RELAY STARTED")
+    print("==============================")
+
+
+    print(
+        f"Listening: @{TIKTOK_USERNAME}"
+    )
+
+
 
     try:
 
-        print("Closing TikTok connection...")
+        client.run()
 
 
-        await client.disconnect()
+
+    except KeyboardInterrupt:
 
 
-        print("TikTok closed")
+        print()
+
+        print("==============================")
+        print("MANUAL STOP")
+        print("==============================")
+
 
 
     except Exception as e:
 
 
+        print()
+
         print("==============================")
-        print("TIKTOK CLOSE ERROR")
+        print("TIKTOK ERROR")
+        print(type(e).__name__)
         print(e)
+
         print("==============================")
+
+
+
+    finally:
+
+
+        print()
+
+        print("==============================")
+        print("RELAY CLOSED")
+        print("==============================")
+
+
+
+if __name__ == "__main__":
+
+    main()
