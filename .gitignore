@@ -1,13 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Environment
 .env
 
+# TikTok token
 .tio.tokens.json
 
-venv/
-__pycache__/
+# Logs
+logs/
 
-*.pyc
-
-.vscode/
-.idea/
-
-*.log
+# Test files
+tests/
